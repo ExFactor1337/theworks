@@ -11,14 +11,16 @@ process run_fastp {
     input: 
         tuple val(ID), path(FQ1), path(FQ2)
     output:
-        path("*")
+        tuple val(ID), path("*trimmed_1.fastq), path("*trimmed_2.fastq"), emit: trimmed_ch
+	path("*html")
+	path("*json")
     script:
     """
     fastp --in1 ${FQ1} \
           --in2 ${FQ2} \
-          --out1 ${ID}.trimmed_1.fastq \
-          --out2 ${ID}.trimmed_2.fastq \
-          --thread 6 \
+          --out1 ${ID}_trimmed_1.fastq \
+          --out2 ${ID}_trimmed_2.fastq \
+          --thread 4 \
           --html ${ID}_fastp_report.html \
           --json ${ID}_fastp_report.json
     """
