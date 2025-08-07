@@ -1,17 +1,14 @@
 nextflow.enable.dsl=2
 
-params.fastq_dir = false
-params.out_dir = 'results'
-
 fastq_ch = Channel.fromFilePairs("${params.fastq_dir}/*_{1,2,R1,R2,1.clipped,2.clipped}.{fastq,fq}{.gz,}", flat: true)
 
-
 process run_fastp {
+    tag "Running fastp on $ID" 
     publishDir params.out_dir, mode: 'symlink'
     input: 
         tuple val(ID), path(FQ1), path(FQ2)
     output:
-        tuple val(ID), path("*trimmed_1.fastq), path("*trimmed_2.fastq"), emit: trimmed_ch
+        tuple val(ID), path("*trimmed_1.fastq"), path("*trimmed_2.fastq"), emit: trimmed_ch
 	path("*html")
 	path("*json")
     script:
