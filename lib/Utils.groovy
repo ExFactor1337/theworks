@@ -1,6 +1,19 @@
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
 class Utils {
+    public static String getCommonPrefix(filenames){
+        if (filenames.isEmpty()) return ""
+        def prefix = filenames[0].getFileName().toString()
+        filenames[1..-1].each { file -> 
+            file = file.getFileName().toString()
+            def i = 0
+            while (i < Math.min(prefix.length(), file.length()) && prefix[i] == file[i]) {
+                i++
+            }
+        prefix = prefix[0..<i]
+        }
+        return prefix[0..-2]
+    }
     public static void summarizeRun(workflow = workflow, params = params, log = log){
         def summary = [:]
         summary['Pipeline Name'] = 'theWorks'
@@ -12,7 +25,7 @@ class Utils {
         summary['Launch Dir'] = workflow.launchDir
         summary['Project Dir'] = workflow.projectDir
         summary['Working Dir'] = workflow.workDir
-        summary['Output Dir'] = params.outDir
+        summary['Output Dir'] = params.out_dir
         log.info "--------------------SUMMARY--------------------"
         log.info summary.collect {
             k,v -> if(k != null || v != null) "${k.padRight(18)}: $v" 
