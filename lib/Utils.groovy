@@ -1,6 +1,17 @@
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
 class Utils {
+    public static LinkedHashMap to_dict(dict_file){
+        def dict_handle = new File(dict_file)
+        def dict_map = [:] as LinkedHashMap
+        dict_handle.eachLine { line -> 
+            def cols = line.split(/\t/)
+            if (cols.size() >= 2 && cols[0].trim()) {
+                dict_map[cols[0].trim()] = cols[1].trim()
+            }
+        }
+        return dict_map
+    }
     public static String getCommonPrefix(filenames){
         if (filenames.isEmpty()) return ""
         def prefix = filenames[0].getFileName().toString()

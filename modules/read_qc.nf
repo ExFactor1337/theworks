@@ -9,8 +9,8 @@ process run_fastp {
         tuple val(ID), path(FQ1), path(FQ2)
     output:
         tuple val(ID), path("*trimmed_1.fastq"), path("*trimmed_2.fastq"), emit: trimmed_ch
-	path("*html")
-	path("*json")
+	    path("*html")
+	    path("*json")
     script:
     """
     fastp --in1 ${FQ1} \
