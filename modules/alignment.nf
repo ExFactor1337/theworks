@@ -6,7 +6,7 @@ process bwa_align {
     input:
         tuple val(ID), path(FQ1), path(FQ2), val(REF), path("*")
     output:
-        tuple val(ID), path("*sorted.bam"), emit: orig_bam_ch
+        tuple val(ID), path("*sorted.bam"), emit: sorted_bam_ch
     script:
     """
         bwa mem -t 4 $REF $FQ1 $FQ2 | \
@@ -20,11 +20,11 @@ process add_read_groups {
     input: 
         tuple val(ID), path(BAM)
     output: 
-        tuple val(ID), path("*sortedRG.bam"), emit: rg_bam_ch
+        tuple val(ID), path("*sorted.RG.bam"), emit: rg_bam_ch
     script:
     """
     # LB, PL, etc are required inputs that need dummying in. 
-    gatk AddOrReplaceReadGroups -I $BAM -O ${ID}.sortedRG.bam \
+    gatk AddOrReplaceReadGroups -I $BAM -O ${ID}.sorted.RG.bam \
         -LB . \
         -PL . \
         -PU . \
@@ -33,13 +33,17 @@ process add_read_groups {
 }
 
 process mark_duplicates {
+    tag "Marking duplicates in $ID"
+    publishDir params.out_dir, mode: 'symlink' 
     input:
         tuple val(ID), path(BAM) 
     output:
-        tuple val(ID), path
+        tuple val(ID), path("*bam"), path("*metrics")
     script:
     """
-    gatk MarkDuplicates -I 
+    gatk MarkDuplicates --INPUT $BAM \
+        --METRICS_FILE ${ID}.duplicate.metrics \
+        --OUTPUT ${ID}.sorted.RG.MD.bam
     """
 }
 
