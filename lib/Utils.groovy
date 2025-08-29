@@ -1,17 +1,22 @@
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
 class Utils {
-    public static LinkedHashMap to_dict(dict_file){
-        def dict_handle = new File(dict_file)
-        def dict_map = [:] as LinkedHashMap
-        dict_handle.eachLine { line -> 
-            def cols = line.split(/\t/)
-            if (cols.size() >= 2 && cols[0].trim()) {
-                dict_map[cols[0].trim()] = cols[1].trim()
-            }
+    public static String usable_mem(){
+        def free_call = "free -ghL".execute().text
+        def mem_map = [:]
+        def matcher = free_call =~ /(\S+)\s+(\S+)/
+        matcher.each { match ->
+            def key = match[1]
+            def value = match[2]
+            mem_map[key] = value
         }
-        return dict_map
+        def usable_mem = mem_map['CachUse'].replaceAll(/Gi/,'.GB')
+        assert usable_mem.endsWith('.GB') : "Incorrect format detected: ${usable_mem}"
+        return usable_mem
     }
+    public static Integer usable_cores(){
+        return "nproc".execute().text.toInteger() - 1
+    } 
     public static String getCommonPrefix(filenames){
         if (filenames.isEmpty()) return ""
         def prefix = filenames[0].getFileName().toString()
