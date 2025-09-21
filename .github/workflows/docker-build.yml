@@ -1,0 +1,42 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'develop'
+      - 'feature/**'
+      - 'bug/**'
+      - 'release/**'
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker images from 'containers/'
+        run: |
+          for DOCKERFILE in containers/*; do
+            if [ -f "$DOCKERFILE" ]; then
+              DOCKERFILE_NAME=$(basename "$DOCKERFILE")
+              IMAGE_NAME=${DOCKERFILE_NAME##*_}
+              IMAGE_NAME=${IMAGE_NAME%.*}
+
+              docker build -t ghcr.io/${{ github.repository }}:${IMAGE_NAME}-${{ github.sha }} -t ghcr.io/${{ github.repository }}:${IMAGE_NAME}-latest -f "$DOCKERFILE" ./containers/
+              docker push ghcr.io/${{ github.repository }}:${IMAGE_NAME}-${{ github.sha }}
+              docker push ghcr.io/${{ github.repository }}:${IMAGE_NAME}-latest
+            fi
+          done
