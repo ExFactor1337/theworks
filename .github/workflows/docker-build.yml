@@ -15,7 +15,13 @@ jobs:
     permissions:
       contents: read
       packages: write
-
+    strategy:
+      matrix:
+        # Add a new entry to this list for each Dockerfile you want to build.
+        # The filename should be relative to the 'containers' folder.
+        dockerfile_name:
+          - 'runner'
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -26,21 +32,23 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push Docker images from 'containers/'
-        run: |
-          for DOCKERFILE in containers/*; do
-            if [ -f "$DOCKERFILE" ]; then
-              DOCKERFILE_NAME=$(basename "$DOCKERFILE")
-              IMAGE_NAME=${DOCKERFILE_NAME##*_}
-              IMAGE_NAME=${IMAGE_NAME%.*}
-
-              docker build \
-                -t ghcr.io/${{ github.repository }}:${IMAGE_NAME}-${{ github.sha }} \
-                -t ghcr.io/${{ github.repository }}:${IMAGE_NAME}-latest \
-                -f "$DOCKERFILE" ./containers/
-
-              docker push ghcr.io/${{ github.repository }}:${IMAGE_NAME}-${{ github.sha }}
-              docker push ghcr.io/${{ github.repository }}:${IMAGE_NAME}-latest
-            fi
-          done
+      
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=sha,format=long
+            type=raw,value=latest
+            
+      - name: Build and push Docker image for ${{ matrix.dockerfile_name }}
+        uses: docker/build-push-action@v5
+        with:
+          context: ./containers/
+          push: true
+          # The file input uses the matrix variable
+          file: ./containers/${{ matrix.dockerfile_name }}
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ matrix.dockerfile_name }}-${{ steps.meta.outputs.sha }}
+            ghcr.io/${{ github.repository }}:${{ matrix.dockerfile_name }}-latest
