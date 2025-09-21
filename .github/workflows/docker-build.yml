@@ -51,4 +51,4 @@ jobs:
           file: ./containers/${{ matrix.dockerfile_name }}
           tags: |
             ghcr.io/exfactor1337:${{ matrix.dockerfile_name }}-${{ github.sha }}
-            ghcr.io//exfactor1337:${{ matrix.dockerfile_name }}-latest
+            ghcr.io/exfactor1337:${{ matrix.dockerfile_name }}-latest
