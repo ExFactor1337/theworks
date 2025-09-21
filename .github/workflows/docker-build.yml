@@ -35,13 +35,12 @@ jobs:
               IMAGE_NAME=${DOCKERFILE_NAME##*_}
               IMAGE_NAME=${IMAGE_NAME%.*}
 
-              IMAGE_REPO=ghcr.io/${{ github.repository }}:${IMAGE_NAME}
-
               docker build \
-                -t ${IMAGE_REPO}:${{ github.sha }} \
-                -t ${IMAGE_REPO}:latest \
+                -t ghcr.io/${{ github.repository }}:${IMAGE_NAME}-${{ github.sha }} \
+                -t ghcr.io/${{ github.repository }}:${IMAGE_NAME}-latest \
                 -f "$DOCKERFILE" ./containers/
 
-              docker push ${IMAGE_REPO} --all-tags
+              docker push ghcr.io/${{ github.repository }}:${IMAGE_NAME}-${{ github.sha }}
+              docker push ghcr.io/${{ github.repository }}:${IMAGE_NAME}-latest
             fi
           done
