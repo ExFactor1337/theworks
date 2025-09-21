@@ -50,5 +50,4 @@ jobs:
           # The file input uses the matrix variable
           file: ./containers/${{ matrix.dockerfile_name }}
           tags: |
-            ghcr.io/${{ github.repository }}:${{ matrix.dockerfile_name }}-${{ steps.meta.outputs.sha }}
             ghcr.io/${{ github.repository }}:${{ matrix.dockerfile_name }}-latest
