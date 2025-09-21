@@ -26,13 +26,13 @@ RUN wget -qO- https://get.nextflow.io | bash && \
 WORKDIR /opt/pipeline
 
 # Copy pipeline files into the container
-COPY ./configs /opt/pipeline/configs
-COPY ./lib /opt/pipeline/lib
-COPY ./modules /opt/pipeline/modules
-COPY ./assets /opt/pipeline/assets
-COPY ./src /opt/pipeline/src
+COPY ../configs /opt/pipeline/configs
+COPY ../lib /opt/pipeline/lib
+COPY ../modules /opt/pipeline/modules
+COPY ../assets /opt/pipeline/assets
+COPY ../src /opt/pipeline/src
 
 # The main pipeline script
-COPY ./theworks.nf /opt/pipeline/theworks.nf
+COPY ../theworks.nf /opt/pipeline/theworks.nf
 
 CMD ["nextflow", "run", "theworks.nf"]
