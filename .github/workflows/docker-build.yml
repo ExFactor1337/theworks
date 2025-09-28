@@ -47,7 +47,7 @@ jobs:
         with:
           context: ./containers/
           push: true
-          # The file input uses the matrix variable
+          # The file input uses the matrix variable - matrix runs are cool
           file: ./containers/${{ matrix.dockerfile_name }}
           tags: |
             ghcr.io/exfactor1337/theworks_${{ matrix.dockerfile_name }}:${{ github.sha }}
