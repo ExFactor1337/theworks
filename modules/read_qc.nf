@@ -1,6 +1,7 @@
 nextflow.enable.dsl=2
 
 process run_fastp {
+    tag "Running fastp on $ID"
     publishDir params.out_dir, mode: 'symlink'
     input: 
         tuple val(ID), path(FQ1), path(FQ2)
@@ -14,7 +15,7 @@ process run_fastp {
           --in2 ${FQ2} \
           --out1 ${ID}.trimmed_1.fastq \
           --out2 ${ID}.trimmed_2.fastq \
-          --thread 6 \
+          --thread ${params.fastp_cpus} \
           --html ${ID}_fastp_report.html \
           --json ${ID}_fastp_report.json
     """
