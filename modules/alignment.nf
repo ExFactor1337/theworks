@@ -51,7 +51,7 @@ process mark_duplicates {
     input:
         tuple val(ID), path(BAM) 
     output:
-        tuple val(ID), path("*bam"), path("*metrics"), emit: dedup_bam_ch
+        tuple val(ID), path("*bam"), emit: dedup_bam_ch
     script:
     opt_remove_duplicates = params.remove_duplicates ? '--REMOVE_DUPLICATES true' : ''
     """
@@ -61,31 +61,39 @@ process mark_duplicates {
     """
 }
 
-// Common parameters for BQSR
-params.fasta = 'path/to/reference.fasta'
-params.known_snps = 'path/to/dbsnp.vcf.gz'
-params.known_indels = 'path/to/mills_indels.vcf.gz'
 
 process recalibrate_base_quality {
+    tag "Recalibrating base quality scores for $ID"
     publishDir params.out_dir, mode: 'symlink'
     input:
-        tuple val(ID), path(BAM), val(REF), path("*") //"*" includes all reference files
-        path(known_snps)
-        path(known_indels)
+        tuple val(ID), path(BAM), val(REF), path("*"), path("*") //"*" includes all reference files
+        val(known_variants)
 
     output:
     // tuple val(meta), path(table)
-    tuple val(ID, path("*recal_data.table")), emit: recal_table
+    tuple val(ID), path("*recal_data.table"), emit: recal_table
 
     script:
-    def recal_table = "${meta.id}.recal_data.table"
+    if (!known_variants) {
+        throw new IllegalArgumentException("Error: The knownVariantsList for BaseRecalibrator cannot be empty.")
+    }
+    // Build the GATK command using the Groovy 'collect' and 'join' pattern
+    def tabixCmds = known_variants.collect { path ->
+        "tabix -f -p vcf \"${path}\""
+    }.join('\n')
+    def knownSitesArgs = known_variants.collect { path ->
+        "--known-sites ${path}"
+    }.join(' ')
+    def recal_table = "${ID}.recal_data.table"
     """
-    gatk BaseRecalibrator \\
-      --input ${input_bam} \\
-      --reference ${ref} \\
-      --output ${recal_table} \\
-      --known-sites ${known_snps} \\
-      --known-sites ${known_indels}
+    # Tabix the known variants
+    ${tabixCmds}
+    
+    # Recalibrate base quality scores
+    gatk BaseRecalibrator \
+      --input ${BAM} \
+      --reference ${REF}.fa \
+      --output ${recal_table} ${knownSitesArgs}
     """
 }
 
