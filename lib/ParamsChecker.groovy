@@ -4,21 +4,16 @@ import java.nio.file.Files
 class ParamsChecker {
     private final Map definitions
     
-    /**
-     * Constructs a ParamsChecker with the parameter definitions.
-     * @param definitions A map defining the expected parameters and their constraints.
-     */
+    //Constructs a ParamsChecker with the parameter definitions.
+    //@param definitions A map defining the expected parameters and their constraints.
     ParamsChecker(Map definitions) {
         this.definitions = definitions
     }
 
-    /**
-     * Validates and processes user-supplied parameters against the stored definitions.
-     *
-     * @param userParams A map of parameters supplied by the user (e.g., from CLI).
-     * @return A map containing only the validated and converted parameters.
-     * @throws RuntimeException if any validation or type check fails.
-     */
+    //Validates and processes user-supplied parameters against the stored definitions.
+    //@param userParams A map of parameters supplied by the user (e.g., from CLI).
+    //@return A map containing only the validated and converted parameters.
+    //@throws RuntimeException if any validation or type check fails.
     Map validate(Map userParams) {
         def validatedParams = [:]
         def workingDefinitions = [:]
@@ -27,7 +22,7 @@ class ParamsChecker {
         this.definitions.each { paramName, defs ->
             workingDefinitions[paramName] = new HashMap(defs)
             
-            // SPECIAL FLAG INITIALIZATION: If 'flag' type and no default_value is set, 
+            // If 'flag' type and no default_value is set, 
             // implicitly set it to false.
             if (defs.type == 'flag' && !defs.containsKey('default_value')) {
                 workingDefinitions[paramName].default_value = false
@@ -36,7 +31,6 @@ class ParamsChecker {
 
         userParams.each { paramName, value ->
             if (workingDefinitions.containsKey(paramName)) {
-                // --- SPECIAL HANDLING FOR FLAG TYPE ---
                 if (workingDefinitions[paramName].type == 'flag') {
                     workingDefinitions[paramName].default_value = true
                 } else {
@@ -50,7 +44,7 @@ class ParamsChecker {
             def value = defs.default_value
             def type = defs.type
             
-            // --- REQUIRED CHECK ---
+            // Required Check
             if (defs.required && (value == null || (value instanceof String && value.trim().isEmpty()))) {
                 throw new RuntimeException("Parameter '${paramName}' is required but was not provided.")
             }
@@ -64,7 +58,7 @@ class ParamsChecker {
                 value = value.trim()
             }
 
-            // --- String Validation (Allow Check) ---
+            // String Validation for 'string' type with 'allow' patterns
             if (defs.allow) {
                 def valueAsString = value.toString()
                 def matched = defs.allow.any { pattern ->
@@ -116,11 +110,9 @@ class ParamsChecker {
                     value = value.toString()
                 }
             } else {
-                // --- CATCH ALL FOR UNRECOGNIZED TYPE ---
-                // 1. Print the help message for context.
-                this.printHelp()
-                
-                // 2. Throw the exception to halt execution.
+                // Unknown type
+                // Print the help message for context.
+                this.printHelp()                
                 throw new RuntimeException("\nFATAL CONFIGURATION ERROR: Unrecognized type '${type}' found for parameter '${paramName}'. Please correct your parameter definitions.")
             }
             
@@ -130,7 +122,6 @@ class ParamsChecker {
         return validatedParams
     }
     
-    // The printHelp method remains unchanged
     void printHelp(String asciiArtFilePath = null) {
         Auditor.printAsciiBanner(asciiArtFilePath)
         def output = new StringBuilder()

@@ -1,6 +1,14 @@
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
 class Utils {
+    static final BWA_INDEX_EXTENSIONS = [
+        '.fa',   
+        '.amb',
+        '.ann',
+        '.bwt',
+        '.pac',
+        '.sa'
+    ].toSet()
     public static String usable_mem(){
         def free_call = "free -ghL".execute().text
         def mem_map = [:]
@@ -30,24 +38,6 @@ class Utils {
         }
         return prefix[0..-2]
     }
-    public static void summarizeRun(workflow = workflow, params = params, log = log){
-        def summary = [:]
-        summary['Pipeline Name'] = 'theWorks'
-        summary['Version'] = '1.0'
-        summary['Config Files'] = workflow.configFiles.join(', ')
-        summary['User'] = workflow.userName
-        summary['Start Time'] = this.getTimestamp()
-        if (workflow.containerEngine) summary['Container'] = "$workflow.containerEngine - ENABLED"
-        summary['Launch Dir'] = workflow.launchDir
-        summary['Project Dir'] = workflow.projectDir
-        summary['Working Dir'] = workflow.workDir
-        summary['Output Dir'] = params.out_dir
-        log.info "--------------------SUMMARY--------------------"
-        log.info summary.collect {
-            k,v -> if(k != null || v != null) "${k.padRight(18)}: $v" 
-            }.join("\n") 
-        log.info "-----------------------------------------------"
-    }
     public static String getTimestamp(){
         def timestamp = new SimpleDateFormat("yyyy-MM-dd")
         return timestamp.format(new Date())
@@ -55,5 +45,19 @@ class Utils {
     public static String toAbsPath(stringPath){ 
         def path = Paths.get(stringPath)
         return path.toAbsolutePath().toString()
+    }
+    // Define the set of required extensions outside the function (constant)
+    public static void validateReferenceFiles(String ref_dir_path){
+        def dir = new File(ref_dir_path)
+        def all_files_in_dir = dir.listFiles() ?: []
+        def found_extensions = all_files_in_dir.collect { file ->
+            def name = file.name
+            def ext = name.substring(name.lastIndexOf('.'))
+            return ext
+        }.toSet()
+        def missing_extensions = BWA_INDEX_EXTENSIONS - found_extensions
+        if (missing_extensions) {
+            throw new IllegalArgumentException("Error: Missing required reference files with extensions: ${missing_extensions.join(', ')} in directory: ${ref_dir_path}")
+        }
     }
 }
