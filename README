@@ -1,0 +1,14 @@
+Requirements for Reference Directory:
+Genomic Reference FASTA
+    <Reference Name>.fa
+BWA Index Outputs
+    <Reference Name>.amb
+    <Reference Name>.ann
+    <Reference Name>.bwt
+    <Reference Name>.pac
+    <Reference Name>.sa
+Samtools FAIDX Output
+    <Reference Name>.fa.fai
+GATK Sequence Dictionary
+    <Reference Name>.dict
+
