@@ -8,7 +8,9 @@ include { create_sequence_dictionary;
           bwa_align; 
           add_read_groups; 
           mark_duplicates;
-          recalibrate_base_quality } from './modules/alignment.nf'
+          recalibrate_base_quality;
+          apply_base_recalibration } from './modules/alignment.nf'
+include { call_variants_haplotypecaller } from './modules/variant_calling.nf'
 
 fastq_ch = Channel.fromFilePairs("${params.fastq_dir}/*_{1,2,R1,R2}.{fastq,fq}{.gz,}", flat: true)
 
@@ -57,6 +59,14 @@ workflow {
                                 .combine(ref_ch)
                                 .combine(known_variants_ch),
                              known_variants_ch)
+
+    // Apply recalibration
+    apply_base_recalibration(recalibrate_base_quality.out.recal_ch
+                                .combine(ref_ch))
+
+    // Call variants
+    call_variants_haplotypecaller(apply_base_recalibration.out.processed_bam_ch
+                                    .combine(ref_ch))
 }
 
 workflow.onComplete {

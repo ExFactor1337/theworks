@@ -29,7 +29,6 @@ process bwa_align {
 
 process add_read_groups {
     tag "Adding read group tags to $ID"
-    publishDir params.out_dir, mode: 'symlink'
     input: 
         tuple val(ID), path(BAM)
     output: 
@@ -47,7 +46,6 @@ process add_read_groups {
 
 process mark_duplicates {
     tag "Marking duplicates in $ID"
-    publishDir params.out_dir, mode: 'symlink' 
     input:
         tuple val(ID), path(BAM) 
     output:
@@ -64,14 +62,14 @@ process mark_duplicates {
 
 process recalibrate_base_quality {
     tag "Recalibrating base quality scores for $ID"
-    publishDir params.out_dir, mode: 'symlink'
     input:
         tuple val(ID), path(BAM), val(REF), path("*"), path("*") //"*" includes all reference files
         val(known_variants)
 
     output:
-    // tuple val(meta), path(table)
-    tuple val(ID), path("*recal_data.table"), emit: recal_table
+    tuple val(ID), 
+          path(BAM), 
+          path("*recal_data.table"), emit: recal_ch
 
     script:
     if (!known_variants) {
@@ -94,6 +92,28 @@ process recalibrate_base_quality {
       --input ${BAM} \
       --reference ${REF}.fa \
       --output ${recal_table} ${knownSitesArgs}
+    """
+}
+
+process apply_base_recalibration {
+    tag "Applying base quality score recalibration for $ID"
+    publishDir params.out_dir, mode: 'symlink'
+    input:
+        tuple val(ID), path(BAM), path(RECAL_TABLE), val(REF), path("*")
+    output:
+        tuple val(ID), path("*recal.bam"), path("*recal.bam.bai"), emit: processed_bam_ch
+    script:
+    """
+    gatk ApplyBQSR \
+      --input ${BAM} \
+      --bqsr-recal-file ${RECAL_TABLE} \
+      --reference ${REF}.fa \
+      --output ${ID}.sorted.RG.MD.recal.bam
+    
+    #Create the index for the processed bam
+    gatk BuildBamIndex \
+      --INPUT ${ID}.sorted.RG.MD.recal.bam \
+      --OUTPUT ${ID}.sorted.RG.MD.recal.bam.bai
     """
 }
 
