@@ -1,0 +1,77 @@
+Starting Pipeline Audit Log...
+
+                           ⣀⣀⣀⡤⡤⡶⠶⠲⠚⠛⠛⢳⣶⣦⣤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀                    ⠀⣴⣿⠿⠛⠋⣴⡿⠃⠀⢸⣷⠀⠀⠈⠉⠀⠈⠙⠛⠿⣦⣄⠀⠀⠀⠀⠀⠀
+⠀⠀                   ⢀⡠⡾⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⢀⡀⠀⠀⠀⠀⡀⠻⠶⣦⠀⠈⢿⡦⡀⠀⠀⠀
+                   ⠀⢠⠎⣠⠄⠀⣠⣾⠟⠀⠀⠠⣦⣤⡄⠙  ⠀⠀⠀⠹⣦⠀⠀⠀⠀⠀⠉⠛⢄⠀⠀
+                   ⢀⠏⠛⠉⠀⠀⠈⠀⠀⢰⣤⠀⠀⠀⠀⣴⠾⠂⠀⠀⢠⡶⠀⠀⠛⠛⠃⣴⡀⠀⠈⡆⠀
+                   ⣸⠀⢢⠀⠀⠀⠀⠀⠀⠈⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠛⠐⢦⣴⣷⠀
+                   ⡇⠀⠀⢀⣀⣀⣀⣠⣤⣤⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣤⣤⣀⣀⣀⠀⠀⠈⣿⠀
+          _____ _   _ _______        _____  ____  _  ______  
+         |_   _| | | | ____\ \      / / _ \|  _ \| |/ / ___| 
+           | | | |_| |  _|  \ \ /\ / | | | | |_) | ' /\___ \ 
+           | | |  _  | |___  \ V  V /| |_| |  _ <| . \ ___) |
+           |_| |_| |_|_____|  \_/\_/  \___/|_| \_|_|\_|____/ ⠀
+
+                    ⣷⡄⠀⠀⣤⠀⠀⣀⣤⠀⠀⠀⠀⠀⠀⠀⠀⠙⠛⠋⠙⠓⠒⠒⠒⠒⠀⠀⠀⠀⢸
+                    ⠙⢿⡦⣀⡁⠀⠀⠀⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠛⠀⢀⣀⣀⡞⠀
+                   ⠀⠀⠈⠑⠻⠽⢷⣀⣶⣀⣀⣀⣀⣀⣀⣴⣦⣄⣠⣦⣀⣀⣀⣀⣀⣠⣦⣶⣎⠭⠞
+
+
+====================== PIPELINE SUMMARY ======================
+Pipeline Name   : The Works
+Version         : 0.0.1
+Config Files    : /home/exfactor/git/theworks/nextflow.config
+User            : exfactor
+Start Time      : 2025-10-06 08:22:22 EDT
+Nextflow Version: 25.04.7
+Launch Dir      : /home/exfactor/git/theworks
+Project Dir     : /home/exfactor/git/theworks
+Working Dir     : /opt/nextflow/work
+Container       : DISABLED
+Output Dir      : /home/exfactor/git/theworks/results
+============================================================
+
+======================= PARAMETERS =======================
+  fastq_dir: /home/exfactor/projects/data/fastqs/downsampled_10000
+  out_dir: /home/exfactor/git/theworks/results
+  reference_dir: /home/exfactor/projects/data/references/genome
+  known_variants_dir: /home/exfactor/projects/data/references/known_variants/hg38
+  bwa_cpus: 4
+  fastp_cpus: 4
+  genome: hg38
+  ascii_art: /home/exfactor/git/theworks/assets/banner.txt
+============================================================
+
+======================= OUTPUT FILES =======================
+Total files found in /home/exfactor/git/theworks/results: 22
+  - ERR14109647_ds10000.recal_data.table
+  - ERR14109647_ds10000.sorted.RG.MD.bam
+  - ERR14109647_ds10000.sorted.RG.MD.recal.bam
+  - ERR14109647_ds10000.sorted.RG.bam
+  - ERR14109647_ds10000.trimmed_1.fastq
+  - ERR14109647_ds10000.trimmed_2.fastq
+  - ERR14109647_ds10000_fastp_report.html
+  - ERR14109647_ds10000_fastp_report.json
+  - ERR14109647_ds10000_hg38.sorted.bam
+  - ERR14109673_ds10000.recal_data.table
+  - ERR14109673_ds10000.sorted.RG.MD.bam
+  - ERR14109673_ds10000.sorted.RG.MD.recal.bam
+  - ERR14109673_ds10000.sorted.RG.bam
+  - ERR14109673_ds10000.trimmed_1.fastq
+  - ERR14109673_ds10000.trimmed_2.fastq
+  - ERR14109673_ds10000_fastp_report.html
+  - ERR14109673_ds10000_fastp_report.json
+  - ERR14109673_ds10000_hg38.sorted.bam
+  - The_Works_20251006_081411.log
+  - The_Works_20251006_081910.log
+  - The_Works_20251006_082339.log
+  - hg38.dict
+============================================================
+
+========================= RUN FINISHED =========================
+Run Status: SUCCESS
+Exit Code: 0
+End Time: 2025-10-06 08:23:39 EDT
+Total Duration: 1m 17s
+============================================================
