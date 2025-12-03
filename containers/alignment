@@ -24,10 +24,10 @@ RUN wget -qO /tmp/miniforge.sh https://github.com/conda-forge/miniforge/releases
 # Install mamba and pinned bioinformatics packages from conda-forge/bioconda
 RUN ${MINIFORGE_DIR}/bin/conda install -y -c conda-forge mamba && \
     ${MINIFORGE_DIR}/bin/mamba install -y -c conda-forge -c bioconda \
-      bwa=0.7.17 \
-      samtools=1.17 \
-      htslib=1.17 \
-      gatk=4.3.0.0 && \
+      bwa=0.7.19 \
+      samtools=1.21 \
+      htslib=1.21 \
+      gatk=4.6.2.0 && \
     ${MINIFORGE_DIR}/bin/conda clean -afy
 
 WORKDIR /data
