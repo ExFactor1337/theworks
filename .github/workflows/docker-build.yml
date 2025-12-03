@@ -21,6 +21,9 @@ jobs:
         # The filename should be relative to the 'containers' folder.
         dockerfile_name:
           - 'runner'
+          - 'read_qc'
+          - 'variant_caller'
+          - 'alignment'
     
     steps:
       - name: Checkout repository

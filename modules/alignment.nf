@@ -116,7 +116,3 @@ process apply_base_recalibration {
       --OUTPUT ${ID}.sorted.RG.MD.recal.bam.bai
     """
 }
-
-workflow{
-    bwa_align(input_ch)
-}

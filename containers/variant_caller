@@ -1,0 +1,36 @@
+FROM ubuntu:22.04
+
+LABEL description="Variant calling image with pinned `gatk=4.3.0.0` and `r-base=4.3.1` installed via mamba/conda"
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    MINIFORGE_DIR=/opt/miniforge \
+    PATH=/opt/miniforge/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      curl \
+      wget \
+      bzip2 \
+      ca-certificates \
+      openjdk-17-jre \
+      build-essential && \
+    rm -rf /var/lib/apt/lists/*
+
+
+
+# Install Miniforge (lightweight conda distribution)
+RUN wget -qO /tmp/miniforge.sh https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh && \
+    bash /tmp/miniforge.sh -b -p ${MINIFORGE_DIR} && \
+    rm /tmp/miniforge.sh && \
+    ${MINIFORGE_DIR}/bin/conda install -y -c conda-forge mamba && \
+    ${MINIFORGE_DIR}/bin/mamba update -y -n base -c conda-forge conda
+
+# Install pinned GATK and R for plotting
+RUN ${MINIFORGE_DIR}/bin/mamba install -y -c conda-forge -c bioconda \
+            gatk=4.3.0.0 \
+            r-base=4.3.1 \
+            r-ggplot2 && \
+        ${MINIFORGE_DIR}/bin/conda clean -afy
+
+WORKDIR /data
+
+CMD ["bash"]
